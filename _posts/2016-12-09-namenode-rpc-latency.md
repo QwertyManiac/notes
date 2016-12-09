@@ -100,6 +100,7 @@ try {
 ```
 
 For WRITE locks:
+
 ```java
 try {
   // The below will block if there's any READ lock or WRITE lock being held
