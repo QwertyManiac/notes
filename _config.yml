@@ -12,7 +12,7 @@ title:            Notes
 tagline:          Harsh's mind dumps
 description:      "Random notes over troubleshooting Big Data Systems."
 url:              https://qwertymaniac.github.io/notes
-baseurl:          /notes
+baseurl:          /notes/
 
 author:
   name:           'Harsh J'
