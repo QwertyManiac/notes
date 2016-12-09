@@ -7,14 +7,12 @@ categories: namenode hdfs performance troubleshooting
 
 This article talks about the following style of an alert sent by Cloudera Manager for a HDFS service.
 
-```
-Dec 6 9:29 PM RPC Latency Concerning
+> Dec 6 9:29 PM - RPC Latency Concerning
 The health test result for NAME_NODE_RPC_LATENCY has become concerning:
-The moving average of the RPC latency is 2.2 second(s) over the previous
-5 minute(s). The moving average of the queue time is 634 millisecond(s).
+The moving average of the RPC latency is 2.2 second(s) over the previous 5 minute(s).
+The moving average of the queue time is 634 millisecond(s).
 The moving average of the processing time is 1.5 second(s).
 Warning threshold: 1 second(s).
-```
 
 RPC Operations and Locks
 ------------------------
@@ -291,20 +289,16 @@ Process Pauses
 
 The NameNode is a Java process, and as a consequence of that, may suffer from Garbage Collection (GC) pauses at any point. While a lot of work has gone into the NameNode's system to avoid generating objects in a manner that can cause long full-GC collection times, it may still occasionally occur. Long GC pauses inside the JVM are auto-detected and logged by the class `org.apache.hadoop.util.JvmPauseMonitor`. A GC paused aftermath log will appear as below:
 
-```
-2016-09-27 01:36:00,585 WARN org.apache.hadoop.util.JvmPauseMonitor:
+> 2016-09-27 01:36:00,585 WARN org.apache.hadoop.util.JvmPauseMonitor:
 Detected pause in JVM or host machine (eg GC): pause of approximately 36848ms
 GC pool 'ParNew' had collection(s): count=1 time=828ms
 GC pool 'ConcurrentMarkSweep' had collection(s): count=1 time=36020ms
-```
 
 The process can also pause for a number of other factors, such as memory allocation hangs (typically avoidable by using a minimum-heap-size setting), network or disk resource wait hangs, and other kernel level scheduling troubles. The `JvmPauseMonitor` catches these as well, and indicates them as a pause with no detected GCs. For ex.:
 
-```
-2016-07-04 10:26:36,570 WARN org.apache.hadoop.util.JvmPauseMonitor:
+> 2016-07-04 10:26:36,570 WARN org.apache.hadoop.util.JvmPauseMonitor:
 Detected pause in JVM or host machine (eg GC): pause of approximately 81434ms
 No GCs detected
-```
 
 Since the RPC processing time metric is a wall-clock time measure, these pauses reflect on their reported averages after the pausing recovers. In such a case, the heap needs to be tuned or the recent operations done (prior to a large full GC), or the lower level resource problems need to be analyzed, depending on what caused the pause.
 
