@@ -21,32 +21,32 @@ RPC Operations and Locks
 
 The NameNode's RPC protocols are typically divided into two categories, each served by its own port:
 
-- **Client RPCs** All operations that is typically done as I/O work by HDFS clients
-- **Service RPCs** All remaining cluster-side maintenance operations, such as those required by DataNodes and the FailoverController daemons
+* **Client RPCs** All operations that is typically done as I/O work by HDFS clients
+* **Service RPCs** All remaining cluster-side maintenance operations, such as those required by DataNodes and the FailoverController daemons
 
 The set of `Client RPCs` in their `Cloudera Manager` metric naming style are semi-exhaustively:
 
-- **create** Create a new file entry
-- **mkdirs** Create a new directory entry
-- **add_block** Add a new block to an open file
-- **append** Reopen a closed file for append
-- **set_replication** Change the replication factor of a file
-- **set_permission** Change the permission of a file
-- **set_owner** Change the ownership of a file
-- **abandon_block** Abandon a currently open block pipeline
-- **complete** Close an open file
-- **rename / rename2** Rename a file
-- **delete** Delete a file
-- **get_listing** List a directory
-- **renew_lease** Renew the lease on an open file
-- **recover_lease** Recover the lease on an open file from another client
-- **get_file_info** Get the stat of a file or directory
-- **get_content_summary** Get the stat of a file or directory, with detailed summary of its space utilization and quota counts
-- **fsync** Reflect the new length of an open file immediately
-- **get_additional_datanode** Add a new DataNode location to existing block pipeline
-- **update_block_for_pipeline** Update the block statistics of an existing block pipeline (such as after a failure occurs)
-- **update_pipeline** Update the state of an existing pipeline (such as after a failure occurs)
-- **get_block_locations** Returns the locations of a given block ID
+* **create** Create a new file entry
+* **mkdirs** Create a new directory entry
+* **add_block** Add a new block to an open file
+* **append** Reopen a closed file for append
+* **set_replication** Change the replication factor of a file
+* **set_permission** Change the permission of a file
+* **set_owner** Change the ownership of a file
+* **abandon_block** Abandon a currently open block pipeline
+* **complete** Close an open file
+* **rename / rename2** Rename a file
+* **delete** Delete a file
+* **get_listing** List a directory
+* **renew_lease** Renew the lease on an open file
+* **recover_lease** Recover the lease on an open file from another client
+* **get_file_info** Get the stat of a file or directory
+* **get_content_summary** Get the stat of a file or directory, with detailed summary of its space utilization and quota counts
+* **fsync** Reflect the new length of an open file immediately
+* **get_additional_datanode** Add a new DataNode location to existing block pipeline
+* **update_block_for_pipeline** Update the block statistics of an existing block pipeline (such as after a failure occurs)
+* **update_pipeline** Update the state of an existing pipeline (such as after a failure occurs)
+* **get_block_locations** Returns the locations of a given block ID
 
 Upon close observation of the above list, you can note that almost all of these operations operate only on the level of a single file or directory (meaning they are to be constant in operational length), with the exclusion of `get_listing` and `get_content_summary`, which are required to give details and summaries of an unknown number of children under the passed file.
 
@@ -55,8 +55,8 @@ However, for `get_listing` and `get_content_summary` there are additional featur
 The NameNode's namespace (the filesystem tree maintained in its memory, represented by the class `org.apache.hadoop.hdfs.server.namenode.FSNamesystem`) uses a `READ`**/**`WRITE` lock model that, while better than a *monolithic* lock, is still not too coarse (such as over a specific path inside the tree).
 
 What this means is that today, for all operations:
-- If the operation is `READ` category, it may run in parallel with other `READ` category operations
-- If the operation is `WRITE` category, it may only run exclusively, and no `READ` operations may run at this time
+* If the operation is `READ` category, it may run in parallel with other `READ` category operations
+* If the operation is `WRITE` category, it may only run exclusively, and no `READ` operations may run at this time
 
 Here's the Client RPCs list again, this time with the category mentioned and their runtime complexity:
 
@@ -184,18 +184,18 @@ WHERE roleType = NAMENODE
 The metric includes all time from the point the request begins (accepted for handling from queue), till its completed entirely (i.e. responded back to the client). This includes blocking wait times such as lock waits, I/O waits on disks for durable operations, etc.
 
 To summarize what we covered above:
-- Client RPCs are designed to be always or mostly constant-like in amount of runtime, by their simple nature or by implementation detail.
-- Locking patterns of READ and WRITE category of RPCs.
-- READ type operations do not do disk I/O on the NameNode, except `get_block_locations` which may sometimes do it.
-- WRITE type operations always do disk I/O on the NameNode.
+* Client RPCs are designed to be always or mostly constant-like in amount of runtime, by their simple nature or by implementation detail.
+* Locking patterns of READ and WRITE category of RPCs.
+* READ type operations do not do disk I/O on the NameNode, except `get_block_locations` which may sometimes do it.
+* WRITE type operations always do disk I/O on the NameNode.
 
 Moving next to the other category of RPCs, the `Service RPCs`, a semi-exhaustive list of it would be:
 
-- **service_block_received_and_deleted** - Incremental block report of blocks added or deleted since the last report
-- **service_send_heartbeat** - Periodic heartbeat of DN health, and command status exchanges
-- **service_block_report** - Full block report of all blocks on the DN and their states
-- **service_register_datanode** - Necessary one-time RPC of a new DN instance before it can do the others above
-- **service_monitor_health** - Health check of NN RPC responsiveness for HA Monitor (ZKFC)
+* **service_block_received_and_deleted** - Incremental block report of blocks added or deleted since the last report
+* **service_send_heartbeat** - Periodic heartbeat of DN health, and command status exchanges
+* **service_block_report** - Full block report of all blocks on the DN and their states
+* **service_register_datanode** - Necessary one-time RPC of a new DN instance before it can do the others above
+* **service_monitor_health** - Health check of NN RPC responsiveness for HA Monitor (ZKFC)
 
 By the very wording of *blocks* in the descriptions above, its clear that not all of these calls are as constant-like as the `Client RPCs` were. Their runtime would depend on the number of blocks or commands being passed around. This now changes the locking pattern we'd explored earlier slightly, in that if any of these are WRITE operations then the amount of time their WRITE lock gets held will now be considerably higher and block everything else.
 
