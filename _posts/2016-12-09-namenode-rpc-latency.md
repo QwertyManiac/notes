@@ -60,27 +60,27 @@ Here's the Client RPCs list again, this time with the category mentioned and the
 
 Client RPC | Lock Type | Constant? | Description
 -----------|-----------|-----------|------------
-**create** | READ | Yes | Create a new file entry
-**mkdirs** | READ | Yes | Create a new directory entry
-**add_block** | READ | Yes | Add a new block to an open file
-**append** | READ | Yes | Reopen a closed file for append
-**set_replication** | READ | Yes | Change the replication factor of a file
-**set_permission** | READ | Yes | Change the permission of a file
-**set_owner** | READ | Yes | Change the ownership of a file
-**abandon_block** | READ | Yes | Abandon a currently open block pipeline
-**complete** | READ | Yes | Close an open file
-**rename / rename2** | READ | Yes | Rename a file
-**delete** | READ | Yes | Delete a file
+**create** | WRITE | Yes | Create a new file entry
+**mkdirs** | WRITE | Yes | Create a new directory entry
+**add_block** | WRITE | Yes | Add a new block to an open file
+**append** | WRITE | Yes | Reopen a closed file for append
+**set_replication** | WRITE | Yes | Change the replication factor of a file
+**set_permission** | WRITE | Yes | Change the permission of a file
+**set_owner** | WRITE | Yes | Change the ownership of a file
+**abandon_block** | WRITE | Yes | Abandon a currently open block pipeline
+**complete** | WRITE | Yes | Close an open file
+**rename / rename2** | WRITE | Yes | Rename a file
+**delete** | WRITE | Yes | Delete a file
 **get_listing** | READ | No | List a directory
 **renew_lease** | READ | Yes | Renew the lease on an open file
-**recover_lease** | READ | Yes | Recover the lease on an open file from another client
+**recover_lease** | WRITE | Yes | Recover the lease on an open file from another client
 **get_file_info** | READ | Yes | Get the stat of a file or directory
 **get_content_summary** | READ | No | Get the stat of a file or directory, with detailed summary of its space utilization and quota counts
-**fsync** | READ | Yes | Reflect the new length of an open file immediately
+**fsync** | WRITE | Yes | Reflect the new length of an open file immediately
 **get_additional_datanode** | READ | Yes | Add a new DataNode location to existing block pipeline
-**update_block_for_pipeline** | READ | Yes | Update the block statistics of an existing block pipeline (such as after a failure occurs)
-**update_pipeline** | READ | Yes | Update the state of an existing pipeline (such as after a failure occurs)
-**get_block_locations** | READ | Yes | Returns the DataNode hostnames that hold the replica of a given block ID
+**update_block_for_pipeline** | WRITE | Yes | Update the block statistics of an existing block pipeline (such as after a failure occurs)
+**update_pipeline** | WRITE | Yes | Update the state of an existing pipeline (such as after a failure occurs)
+**get_block_locations** | READ/WRITE | Yes | Returns the DataNode hostnames that hold the replica of a given block ID
 
 Code-wise, a lock-unlock operation would look like this the below.
 
