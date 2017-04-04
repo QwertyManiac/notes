@@ -175,7 +175,8 @@ SELECT add_block_avg_time,
        get_content_summary_avg_time,
        fsync_avg_time,
        update_block_for_pipeline_avg_time,
-       update_pipeline_avg_time
+       update_pipeline_avg_time,
+       get_block_locations_avg_time
 WHERE roleType = NAMENODE
 ```
 
